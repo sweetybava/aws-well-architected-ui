@@ -8,7 +8,7 @@ async function askQuestion() {
     const res = await fetch("https://i2dfr23b3zl5dcbqdqijqodqey0fjnzj.lambda-url.ap-southeast-1.on.aws/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ body: question })
+      body: JSON.stringify({question}) //({ body: question })
     });
 
     const data = await res.json();
