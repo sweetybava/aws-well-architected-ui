@@ -1,6 +1,11 @@
 async function askQuestion() {
-  const question = document.getElementById("question").value;
+  const question = document.getElementById("question").value.trim();
   const responseBox = document.getElementById("response");
+
+  if (!question) {
+    responseBox.textContent = "Please enter a question.";
+    return;
+  }
 
   responseBox.textContent = "Loading...";
 
@@ -8,12 +13,22 @@ async function askQuestion() {
     const res = await fetch("https://i2dfr23b3zl5dcbqdqijqodqey0fjnzj.lambda-url.ap-southeast-1.on.aws/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({question}) //({ body: question })
+      body: JSON.stringify({ question })
     });
 
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
     const data = await res.json();
-    responseBox.textContent = data.body || "No response received";
+
+    if (data.success) {
+      // Pretty-print the JSON response
+      responseBox.textContent = JSON.stringify(data.data, null, 2);
+    } else {
+      responseBox.textContent = "Error from Lambda: " + (data.error || "Unknown error");
+    }
   } catch (err) {
-    responseBox.textContent = "Error: " + err.message;
+    responseBox.textContent = "Fetch error: " + err.message;
   }
 }
