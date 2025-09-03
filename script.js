@@ -22,21 +22,25 @@ async function askQuestion() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ question })
+      body: JSON.stringify({ question }),
     });
 
-    const data = await response.json();
+    const contentType = res.headers.get("Content-Type") || "";
+    let data;
+
+    if (contentType.includes("application/json")) {
+      data = await res.json();
+    } else {
+      const text = await res.text();
+      throw new Error(`Non-JSON response: ${text}`);
+    }
 
     toggleSpinner(false);
 
-    if (!response.ok) {
-      throw new Error(data.error || `HTTP error! status: ${response.status}`);
-    }
-
-    if (data.success) {
+    if (res.ok && data.success) {
       responseBox.textContent = JSON.stringify(data.data, null, 2);
     } else {
-      responseBox.textContent = "Error from Lambda: " + (data.error || "Unknown error");
+      responseBox.textContent = "Lambda error: " + (data.error || "Unknown error");
     }
 
   } catch (err) {
@@ -44,3 +48,24 @@ async function askQuestion() {
     responseBox.textContent = "Fetch error: " + err.message;
   }
 }
+    
+    -----------------------
+//     const data = await response.json();
+
+//     toggleSpinner(false);
+
+//     if (!response.ok) {
+//       throw new Error(data.error || `HTTP error! status: ${response.status}`);
+//     }
+
+//     if (data.success) {
+//       responseBox.textContent = JSON.stringify(data.data, null, 2);
+//     } else {
+//       responseBox.textContent = "Error from Lambda: " + (data.error || "Unknown error");
+//     }
+
+//   } catch (err) {
+//     toggleSpinner(false);
+//     responseBox.textContent = "Fetch error: " + err.message;
+//   }
+// }
