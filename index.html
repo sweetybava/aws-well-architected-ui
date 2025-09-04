@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AWS Well-Architected Q&A</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Ask about <span>AWS Well-Architected</span></h1>
-    <div class="input-section">
-      <input type="text" id="question" placeholder="Type your AWS question here..." />
-      <button onclick="askQuestion()">Ask</button>
-    </div>
+    <h1>AWS Well-Architected Q&A</h1>
+    <textarea id="question" placeholder="Type your AWS question here..."></textarea>
+    <button onclick="askQuestion()">Submit</button>
+
+    <h2>Response:</h2>
     <div id="spinner" class="spinner hidden">Processing...</div>
-    <div id="response" class="response-box"></div>
+    <div id="response" class="response-box">Your answer will appear here...</div>
   </div>
 
   <script src="script.js"></script>
