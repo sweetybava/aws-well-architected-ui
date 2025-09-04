@@ -39,7 +39,7 @@ async function askQuestion() {
 }
 
 
----------------------------------------
+// ---------------------------------------
 // async function askQuestion() {
 //   const question = document.getElementById("question").value.trim();
 //   const responseBox = document.getElementById("response");
@@ -85,8 +85,8 @@ async function askQuestion() {
 //   }
 // }
     
-    -----------------------
-//     const data = await response.json();
+//     -----------------------
+// //     const data = await response.json();
 
 //     toggleSpinner(false);
 
