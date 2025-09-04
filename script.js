@@ -21,9 +21,13 @@ async function askQuestion() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ question }),
+      body: JSON.stringify({ question: "What is the best way to ensure high availability?" }),
     });
 
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => console.error("Error:", err));
+    
     const contentType = res.headers.get("Content-Type") || "";
     let data;
 
