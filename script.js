@@ -4,9 +4,11 @@ function toggleSpinner(show) {
 }
 
 async function askQuestion() {
-  const question = document.getElementById("question").value.trim();
+  const questionInput = document.getElementById("question");
   const responseBox = document.getElementById("response");
-  responseBox.textContent = "";
+  const question = questionInput.value.trim();
+
+  responseBox.innerHTML = "";
   toggleSpinner(true);
 
   if (!question) {
@@ -19,15 +21,11 @@ async function askQuestion() {
     const res = await fetch("https://i2dfr23b3zl5dcbqdqijqodqey0fjnzj.lambda-url.ap-southeast-1.on.aws/", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({ question: "What is the best way to ensure high availability?" }),
+      body: JSON.stringify({ question })
     });
 
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(err => console.error("Error:", err));
-    
     const contentType = res.headers.get("Content-Type") || "";
     let data;
 
@@ -41,7 +39,26 @@ async function askQuestion() {
     toggleSpinner(false);
 
     if (res.ok && data.success) {
-      responseBox.innerHTML = `<strong>Q:</strong> ${question}<br/><br/><strong>A:</strong><br/>${JSON.stringify(data.data, null, 2)}`;
+      if (data.matched) {
+        // Format as Q&A layout
+        const bestPracticesHTML = data.BestPractices.map(practice => `<li>${practice}</li>`).join("");
+        responseBox.innerHTML = `
+          <div class="qa-container">
+            <p><strong>Q:</strong> ${question}</p>
+            <p><strong>Pillar:</strong> ${data.Pillar}</p>
+            <p><strong>Best Practices:</strong></p>
+            <ul>${bestPracticesHTML}</ul>
+          </div>
+        `;
+      } else {
+        responseBox.innerHTML = `
+          <div class="qa-container">
+            <p><strong>Q:</strong> ${question}</p>
+            <p><strong>Message:</strong> ${data.Message}</p>
+            <p><strong>Available Pillars:</strong> ${data.AvailablePillars.join(", ")}</p>
+          </div>
+        `;
+      }
     } else {
       responseBox.textContent = "Lambda error: " + (data.error || "Unknown error");
     }
