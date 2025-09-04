@@ -1,30 +1,28 @@
 function toggleSpinner(show) {
   const spinner = document.getElementById("spinner");
-  if (show) spinner.classList.remove("hidden");
-  else spinner.classList.add("hidden");
+  spinner.classList.toggle("hidden", !show);
 }
 
 async function askQuestion() {
-  const questionInput = document.getElementById("question");
-  const question = questionInput.value.trim();
+  const question = document.getElementById("question").value.trim();
   const responseBox = document.getElementById("response");
+  responseBox.textContent = "";
+  toggleSpinner(true);
 
   if (!question) {
-    responseBox.innerHTML = "<p class='error'>Please enter a question.</p>";
+    toggleSpinner(false);
+    responseBox.textContent = "Please enter a question.";
     return;
   }
-
-  responseBox.innerHTML = "";
-  toggleSpinner(true);
 
   try {
     const res = await fetch("https://i2dfr23b3zl5dcbqdqijqodqey0fjnzj.lambda-url.ap-southeast-1.on.aws/", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question })
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ question }),
     });
-
-    toggleSpinner(false);
 
     const contentType = res.headers.get("Content-Type") || "";
     let data;
@@ -36,20 +34,16 @@ async function askQuestion() {
       throw new Error(`Non-JSON response: ${text}`);
     }
 
+    toggleSpinner(false);
+
     if (res.ok && data.success) {
-      // Format as Q&A style
-      responseBox.innerHTML = `
-        <div class="qa">
-          <div class="q">Q: ${question}</div>
-          <div class="a">A: ${typeof data.data === 'string' ? data.data : JSON.stringify(data.data, null, 2)}</div>
-        </div>
-      `;
+      responseBox.innerHTML = `<strong>Q:</strong> ${question}<br/><br/><strong>A:</strong><br/>${JSON.stringify(data.data, null, 2)}`;
     } else {
-      responseBox.innerHTML = `<p class="error">Lambda error: ${data.error || "Unknown error"}</p>`;
+      responseBox.textContent = "Lambda error: " + (data.error || "Unknown error");
     }
 
   } catch (err) {
     toggleSpinner(false);
-    responseBox.innerHTML = `<p class="error">Fetch error: ${err.message}</p>`;
+    responseBox.textContent = "Fetch error: " + err.message;
   }
 }
